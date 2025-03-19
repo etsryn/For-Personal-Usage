@@ -61,7 +61,7 @@ if uploaded_file is not None:
 
     # Step 5: Choose the school name column (display only the first-row value, sorted)
     school_option = st.selectbox(
-        "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get comfused by Faculty's School Name]", 
+        "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     school_col = next((col for col in df.columns if str(df.iloc[0][col]) == school_option), None)
