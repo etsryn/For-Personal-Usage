@@ -14,7 +14,7 @@ def sort_options(options):
         sorted_options = sorted(options)
     return sorted_options
 
-st.title("📁 File Upload: Drag & Drop or Browse")
+st.title("Know Your Lecture's Schedule in Minutes !")
 
 # File uploader with allowed extensions
 uploaded_file = st.file_uploader("Upload your file", type=["xls", "xlsx", "csv"], accept_multiple_files=False)
@@ -32,7 +32,7 @@ if uploaded_file is not None:
 
     # Step 1: Choose the semester column using first-row value as display (sorted)
     semester_option = st.selectbox(
-        "1. Choose the column that contains your Semester:", 
+        "1. View the "Preview of Data" & select the column name, that you think contain `Semester Number`", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     # Map the selected display value back to the actual column
@@ -41,13 +41,13 @@ if uploaded_file is not None:
     # Step 2: Select a semester value from the chosen column (display only the value, sorted)
     if semester_col:
         semester_value = st.selectbox(
-            "Select your Semester value:", 
+            "Select your Semester:", 
             options=sort_options([str(val) for val in df[semester_col].unique()])
         )
 
     # Step 3: Choose the core section column (display only first-row value, sorted)
     section_option = st.selectbox(
-        "2. Choose the column that contains your Core Section:", 
+        "2. View the "Preview of Data" & select the column name, that you think contain `Your Section Number [Core/Elective]", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     section_col = next((col for col in df.columns if str(df.iloc[0][col]) == section_option), None)
@@ -55,13 +55,13 @@ if uploaded_file is not None:
     # Step 4: Select the core section value (display only the value, sorted)
     if section_col:
         section_value = st.selectbox(
-            "Select your Core Section value:", 
+            "Select your required [Core/Elective] Section", 
             options=sort_options([str(val) for val in df[df[semester_col] == semester_value][section_col].unique()])
         )
 
     # Step 5: Choose the school name column (display only the first-row value, sorted)
     school_option = st.selectbox(
-        "3. Choose the column that contains your School Name:", 
+        "3. View the "Preview of Data" & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc) [Don't get comfused by Faculty's School Name]", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     school_col = next((col for col in df.columns if str(df.iloc[0][col]) == school_option), None)
@@ -69,7 +69,7 @@ if uploaded_file is not None:
     # Step 6: Select the school value (display only the value, sorted)
     if school_col:
         school_value = st.selectbox(
-            "Select your School Name value:", 
+            "Select your School:", 
             options=sort_options([
                 str(val) for val in df[
                     (df[semester_col] == semester_value) & 
