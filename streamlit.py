@@ -32,7 +32,7 @@ if uploaded_file is not None:
 
     # Step 1: Choose the semester column using first-row value as display (sorted)
     semester_option = st.selectbox(
-        "1. View the "Preview of Data" & select the column name, that you think contain `Semester Number`", 
+        "1. View the 'Preview of Data' & select the column name, that you think contain `Semester Number`", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     # Map the selected display value back to the actual column
