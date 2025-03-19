@@ -8,17 +8,13 @@ This app helps you quickly filter your lecture schedule based on **Semester**, *
 - Supported formats: `.xls`, `.xlsx`, `.csv`  
 
 ### 2️⃣ Select Your Semester  
-- Choose the column that holds semester numbers (e.g., 2, 4, 6).  
 - Pick your **Semester** from the dropdown.  
 
 ### 3️⃣ Select Your Section  
-- Choose the column that contains **Section** values (e.g., Core, Elective 1, Elective 2).  
 - Select your **required section** from the dropdown.  
 
 ### 4️⃣ Select Your School  
-- Choose the column with **School Names** (e.g., SCSE, SBAS).  
 - Pick your **School** from the dropdown.  
-
 ⚠️ **Tip:** Don’t confuse this with faculty’s school name — it may lead to incorrect results.
 
 ### 5️⃣ Get Your Filtered Schedule!  
