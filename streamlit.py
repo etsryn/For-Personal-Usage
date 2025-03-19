@@ -47,7 +47,7 @@ if uploaded_file is not None:
 
     # Step 3: Choose the core section column (display only first-row value, sorted)
     section_option = st.selectbox(
-        "2. View the `Preview of Data` & select the column name, that you think contain Your 'Section Number' [Core/Elective]", 
+        "2. View the 'Preview of Data' & select the column name, that you think contain Your 'Section Number' [Core/Elective]", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     section_col = next((col for col in df.columns if str(df.iloc[0][col]) == section_option), None)
@@ -61,7 +61,7 @@ if uploaded_file is not None:
 
     # Step 5: Choose the school name column (display only the first-row value, sorted)
     school_option = st.selectbox(
-        "3. View the `Preview of Data` & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get comfused by Faculty's School Name]", 
+        "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get comfused by Faculty's School Name]", 
         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
     )
     school_col = next((col for col in df.columns if str(df.iloc[0][col]) == school_option), None)
