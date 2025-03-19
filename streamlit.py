@@ -112,6 +112,6 @@ if uploaded_file is not None:
                 file_name="filtered_results.csv",
                 mime="text/csv"
             )
-            st.write(f"Rows in output may contain another classes as well which might have same Section, but it's easy to read **{len(final_df)} rows** rather than **{len(uploaded_file)} rows**")
+            st.write(f"Rows in output may contain another classes as well which might have same Section, but it's easy to read **{len(final_df)} rows** rather than **{len(df)} rows**")
 else:
     st.info("📌 Drag & drop or click to upload a file (xls, xlsx, csv)")
