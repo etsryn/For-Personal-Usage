@@ -1,4 +1,5 @@
-# 📌 Know Your Lecture's Schedule in Minutes  : READ -> [USER-MANUAL.md](./USER-MANUAL.md)
+# 📌 Know Your Lecture's Schedule in Minutes
+## READ -> [USER-MANUAL.md](./USER-MANUAL.md)
 
 A **Streamlit** web app designed to help you filter and download your lecture schedule quickly — no more scrolling through endless rows of data!  
 
