@@ -80,7 +80,7 @@ if uploaded_file is not None:
 
     # ✅ Final filtered DataFrame output — shows all rows that match the selections
     if school_value:
-        st.write("### 🎯 Final Filtered DataFrame (All Matching Rows):")
+        st.write("### 🎯 Schedules as per you Requirement is Filtered")
         final_df = df[
             (df[semester_col] == semester_value) & 
             (df[section_col] == section_value) & 
@@ -96,7 +96,7 @@ if uploaded_file is not None:
         # Here, we do NOT sort the final columns multiselect.
         # They appear in the same order as they exist in final_df.
         selected_display = st.multiselect(
-            "📌 Select the columns you want in the final CSV:", 
+            "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise", 
             options=list(col_mapping.values()),       # Not sorted
             default=list(col_mapping.values())        # Not sorted
         )
@@ -107,10 +107,11 @@ if uploaded_file is not None:
         if selected_columns:
             csv_data = final_df[selected_columns].to_csv(index=False).encode('utf-8')
             st.download_button(
-                label="📥 Download Filtered Data as CSV",
+                label="📥 Download your schedule as CSV File",
                 data=csv_data,
                 file_name="filtered_results.csv",
                 mime="text/csv"
             )
+            st.write("Rows in output may contain another classes as well which might have same Section, but it's easy to read 10 lines rather than 3000 lines")
 else:
     st.info("📌 Drag & drop or click to upload a file (xls, xlsx, csv)")
