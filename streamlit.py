@@ -7,7 +7,7 @@ def sort_options(options):
     Assumes options are provided as strings.
     """
     try:
-        # Try converting all options to float for numeric sort
+        # Try converting all options to float for numeric sort.
         numeric_options = [float(option) for option in options]
         sorted_options = [str(x) for x in sorted(numeric_options)]
     except ValueError:
@@ -24,72 +24,70 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
-    # 2) Read file into a DataFrame
+    # Read file without a header (we'll set header manually later)
     if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
+        df = pd.read_csv(uploaded_file, header=None)
     else:
-        df = pd.read_excel(uploaded_file)
+        df = pd.read_excel(uploaded_file, header=None)
 
     st.success("✅ File uploaded successfully!")
-    st.write("### Preview of Data (raw):")
+    st.write("### Raw Data Preview (first 10 rows):")
     st.dataframe(df.head(10))
 
-    # 3) Choose which row in the DataFrame contains column headers
+    # 2) Choose which row contains the column headers (1-based index)
     header_row = st.number_input(
         "Select the row number (1-10) that contains the column names:",
         min_value=1,
         max_value=10,
         value=1
-    ) - 1  # convert 1-based to 0-based index
+    ) - 1  # convert to 0-based index
 
-    # 4) Reassign column names using the chosen row, then drop it
-    df.columns = df.iloc[header_row]
+    # 3) Set the column headers using the selected row and ensure they're strings
+    df.columns = df.iloc[header_row].astype(str)
     df = df[header_row + 1:].reset_index(drop=True)
 
-    st.write("### Preview after adjusting column headers:")
+    st.write("### Data Preview after setting headers:")
     st.dataframe(df.head(10))
 
     # -------------------------
     # Selections for filtering
     # -------------------------
 
-    # Step 1: Semester column
+    # Step 1: Semester column selection
     semester_option = st.selectbox(
         "1. Select the column name that contains 'Semester Number':",
         options=sort_options(list(df.columns))
     )
 
-    # Step 2: Semester value
+    # Step 2: Select a semester value from the chosen column
     if semester_option:
         semester_value = st.selectbox(
             "Select your Semester:",
             options=sort_options([str(val) for val in df[semester_option].unique()])
         )
 
-    # Step 3: Section column
+    # Step 3: Section column selection
     section_option = st.selectbox(
         "2. Select the column name that contains your 'Section Number' [Core/Elective]:",
         options=sort_options(list(df.columns))
     )
 
-    # Step 4: Section value
+    # Step 4: Select a section value (filtering on the chosen semester)
     if section_option:
-        # Filter the dropdown so it only shows sections for the chosen semester
         subset_df = df[df[semester_option] == semester_value]
         section_value = st.selectbox(
             "Select your required [Core/Elective] Section:",
             options=sort_options([str(val) for val in subset_df[section_option].unique()])
         )
 
-    # Step 5: School column
+    # Step 5: School column selection
     school_option = st.selectbox(
         "3. Select the column name that contains your School Name (e.g. SCSE, SBAS, etc.):",
         options=sort_options(list(df.columns))
     )
 
-    # Step 6: School value
+    # Step 6: Select a school value (filtering on the chosen semester & section)
     if school_option:
-        # Filter the dropdown so it only shows school names for the chosen semester + section
         subset_df = df[
             (df[semester_option] == semester_value) &
             (df[section_option] == section_value)
@@ -99,7 +97,7 @@ if uploaded_file is not None:
             options=sort_options([str(val) for val in subset_df[school_option].unique()])
         )
 
-    # Final filter
+    # Final filtered DataFrame output
     if school_value:
         st.write("### 🎯 Schedules filtered based on your selections:")
         final_df = df[
@@ -111,14 +109,14 @@ if uploaded_file is not None:
         st.dataframe(final_df)
         st.write(f"✅ Total rows matching your criteria: **{len(final_df)}**")
 
-        # Column selection for final CSV
+        # Let user select columns for the final CSV export
         selected_columns = st.multiselect(
-            "📌 Select columns you want in the final CSV:",
+            "📌 Select the columns you want in the final CSV:",
             options=list(final_df.columns),
             default=list(final_df.columns)
         )
 
-        # Download button
+        # Download button for CSV export
         if selected_columns:
             csv_data = final_df[selected_columns].to_csv(index=False).encode("utf-8")
             st.download_button(
@@ -134,6 +132,7 @@ if uploaded_file is not None:
             )
 else:
     st.info("📌 Drag & drop or click to upload a file (xls, xlsx, csv).")
+
 
 
 
