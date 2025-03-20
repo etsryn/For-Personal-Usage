@@ -43,11 +43,14 @@ if uploaded_file is not None:
     )# convert to 0-based index
 
     # 3) Set the column headers using the selected row and ensure they're strings
-    df.columns = df.iloc[header_row].astype(str)
-    df = df[header_row + 1:].reset_index(drop=True)
-
-    st.write("### Data Preview after setting headers:")
-    st.dataframe(df.head(10))
+    try:
+        df.columns = df.iloc[header_row].astype(str)
+        df = df[header_row + 1:].reset_index(drop=True)
+        st.write("### Data Preview after setting headers:")
+        st.dataframe(df.head(10))
+    except Exception as e:
+        st.write("Please choose valid column's rows number")
+        st.stop()
 
     # -------------------------
     # Selections for filtering
