@@ -46,7 +46,7 @@ if uploaded_file is not None:
     try:
         df.columns = df.iloc[header_row].astype(str)
         df = df[header_row + 1:].reset_index(drop=True)
-        st.write("### Data Preview after setting headers")
+        st.write("### Data Preview; Headers Set")
         st.dataframe(df.head(10))
     except Exception as e:
         st.error("⚠️ Please choose a valid row number that contains column names!")
@@ -58,7 +58,7 @@ if uploaded_file is not None:
 
     # Step 1: Semester column selection
     semester_option = st.selectbox(
-        "1. View the 'Preview of Data' & select the column name, that you think contain 'Semester Number'", 
+        "1️⃣ View the 'Data Preview; Headers Set' & select the column name, that you think contain 'Semester Number'", 
         options=sort_options(list(df.columns))
     )
 
@@ -71,7 +71,7 @@ if uploaded_file is not None:
 
     # Step 3: Section column selection
     section_option = st.selectbox(
-        "2. View the 'Preview of Data' & select the column name, that you think contain Your 'Section Number' [Core/Elective]",
+        "2️⃣ View the 'Data Preview; Headers Set' & select the column name, that you think contain Your 'Section Number' [Core/Elective]",
         options=sort_options(list(df.columns))
     )
 
@@ -85,7 +85,7 @@ if uploaded_file is not None:
 
     # Step 5: School column selection
     school_option = st.selectbox(
-        "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
+        "3️⃣ View the 'Data Preview; Headers Set' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
         options=sort_options(list(df.columns))
     )
 
