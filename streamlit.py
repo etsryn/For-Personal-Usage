@@ -7,142 +7,74 @@ def sort_options(options):
     Assumes options are provided as strings.
     """
     try:
-        # Try converting all options to float for numeric sort.
         numeric_options = [float(option) for option in options]
         sorted_options = [str(x) for x in sorted(numeric_options)]
     except ValueError:
         sorted_options = sorted(options)
     return sorted_options
 
-st.title("Know Your Lecture's Schedule in Minutes!")
+st.title("📘 Know Your Lecture's Schedule in Minutes!")
 
-# 1) File uploader with allowed extensions
-uploaded_file = st.file_uploader(
-    "Upload your file", 
-    type=["xls", "xlsx", "csv"], 
-    accept_multiple_files=False
-)
+# File uploader
+uploaded_file = st.file_uploader("Upload your file", type=["xls", "xlsx", "csv"])
 
 if uploaded_file is not None:
-    # Read file without a header (we'll set header manually later)
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file, header=None)
-    else:
-        df = pd.read_excel(uploaded_file, header=None)
-
-    st.success("✅ File uploaded successfully!")
-    st.write("### Raw Data Preview")
-    st.dataframe(df.head(10))
-
-    # 2) Choose which row contains the column headers (0-based index)
-    header_row = st.number_input(
-        "Select the row number (0-10) that contains the column names:",
-        min_value=0,
-        max_value=10,
-        value=0
-    )# convert to 0-based index
-
-    # 3) Set the column headers using the selected row and ensure they're strings
+    # Read file based on extension
     try:
-        df.columns = df.iloc[header_row].astype(str)
-        df = df[header_row + 1:].reset_index(drop=True)
-        st.write("### Data Preview after setting headers")
+        if uploaded_file.name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file, header=None)
+        else:
+            df = pd.read_excel(uploaded_file, header=None)
+
+        st.success("✅ File uploaded successfully!")
+        st.write("### Raw Data Preview")
         st.dataframe(df.head(10))
-    except Exception as e:
-        st.write("Please choose valid row number which contains column names")
-        st.stop()
+    
+        # Select header row
+        header_row = st.number_input("Select the row number (0-10) that contains the column names:", min_value=0, max_value=10, value=0)
+        
+        try:
+            df.columns = df.iloc[header_row].astype(str)
+            df = df[header_row + 1:].reset_index(drop=True)
+            st.write("### Data Preview after setting headers")
+            st.dataframe(df.head(10))
+        except Exception:
+            st.error("⚠️ Please choose a valid row number that contains column names!")
+            st.stop()
 
-    # -------------------------
-    # Selections for filtering
-    # -------------------------
+        # Step 1: Semester selection
+        semester_option = st.selectbox("1️⃣ Select the column for 'Semester Number':", options=sort_options(list(df.columns)))
+        semester_value = st.selectbox("Select your Semester:", options=sort_options([str(val) for val in df[semester_option].unique()]))
 
-    # Step 1: Semester column selection
-    semester_option = st.selectbox(
-        "1. View the 'Preview of Data' & select the column name, that you think contain 'Semester Number'", 
-        options=sort_options(list(df.columns))
-    )
-
-    # Step 2: Select a semester value from the chosen column
-    if semester_option:
-        semester_value = st.selectbox(
-            "Select your Semester:",
-            options=sort_options([str(val) for val in df[semester_option].unique()])
-        )
-
-    # Step 3: Section column selection
-    section_option = st.selectbox(
-        "2. View the 'Preview of Data' & select the column name, that you think contain Your 'Section Number' [Core/Elective]",
-        options=sort_options(list(df.columns))
-    )
-
-    # Step 4: Select a section value (filtering on the chosen semester)
-    if section_option:
+        # Step 2: Section selection
+        section_option = st.selectbox("2️⃣ Select the column for your 'Section Number' [Core/Elective]:", options=sort_options(list(df.columns)))
         subset_df = df[df[semester_option] == semester_value]
-        section_value = st.selectbox(
-            "Select your required [Core/Elective] Section:",
-            options=sort_options([str(val) for val in subset_df[section_option].unique()])
-        )
+        section_value = st.selectbox("Select your Section:", options=sort_options([str(val) for val in subset_df[section_option].unique()]))
 
-    # Step 5: School column selection
-    school_option = st.selectbox(
-        "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
-        options=sort_options(list(df.columns))
-    )
+        # Step 3: School selection
+        school_option = st.selectbox("3️⃣ Select the column for 'School Name (e.g., SCSE, SBAS)':", options=sort_options(list(df.columns)))
+        subset_df = df[(df[semester_option] == semester_value) & (df[section_option] == section_value)]
+        school_value = st.selectbox("Select your School:", options=sort_options([str(val) for val in subset_df[school_option].unique()]))
 
-    # Step 6: Select a school value (filtering on the chosen semester & section)
-    if school_option:
-        subset_df = df[
-            (df[semester_option] == semester_value) &
-            (df[section_option] == section_value)
-        ]
-        school_value = st.selectbox(
-            "Select your School:",
-            options=sort_options([str(val) for val in subset_df[school_option].unique()])
-        )
-
-    # Final filtered DataFrame output
-    if school_value:
-        st.write("### 🎯 Schedules as per you Requirement is Filtered")
-        final_df = df[
-            (df[semester_option] == semester_value) &
-            (df[section_option] == section_value) &
-            (df[school_option] == school_value)
-        ]
-
+        # Final filtered DataFrame
+        final_df = df[(df[semester_option] == semester_value) & (df[section_option] == section_value) & (df[school_option] == school_value)]
+        st.write("### 🎯 Your Filtered Schedule")
         st.dataframe(final_df)
         st.write(f"✅ Total rows matching your criteria: **{len(final_df)}**")
 
-        # Let user select columns for the final CSV export
-        selected_columns = st.multiselect(
-            "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise [Optional]", 
-            options=list(final_df.columns),
-            default=list(final_df.columns)
-        )
-
-        # Download button for CSV export
+        # Select columns for CSV export
+        selected_columns = st.multiselect("📌 Select columns for the final CSV (optional):", options=list(final_df.columns), default=list(final_df.columns))
+        
+        # Download button for filtered CSV
         if selected_columns:
             csv_data = final_df[selected_columns].to_csv(index=False).encode("utf-8")
-            st.download_button(
-                label="📥 Download your schedule as CSV File",
-                data=csv_data,
-                file_name="filtered_results.csv",
-                mime="text/csv"
-            )
+            st.download_button("📥 Download your schedule as CSV File", data=csv_data, file_name="filtered_results.csv", mime="text/csv")
+            st.write(f"✅ Exported **{len(final_df)} rows** with selected columns.")
 
-            st.write(
-                f"Rows in output may contain other classes with the same Section, "
-                f"but it's easier to read **{len(final_df)} rows** instead of **{len(df)} rows**."
-            )
+    except Exception as e:
+        st.error(f"⚠️ An error occurred: {e}")
 else:
     st.info("📌 Drag & drop or click to upload a file (xls, xlsx, csv).")
-
-
-
-
-
-
-
-
 
 
 
@@ -179,104 +111,124 @@ else:
 #         sorted_options = sorted(options)
 #     return sorted_options
 
-# st.title("Know Your Lecture's Schedule in Minutes !")
+# st.title("Know Your Lecture's Schedule in Minutes!")
 
-# # File uploader with allowed extensions
-# uploaded_file = st.file_uploader("Upload your file", type=["xls", "xlsx", "csv"], accept_multiple_files=False)
+# # 1) File uploader with allowed extensions
+# uploaded_file = st.file_uploader(
+#     "Upload your file", 
+#     type=["xls", "xlsx", "csv"], 
+#     accept_multiple_files=False
+# )
 
 # if uploaded_file is not None:
-#     # Determine file type and read accordingly
+#     # Read file without a header (we'll set header manually later)
 #     if uploaded_file.name.endswith(".csv"):
-#         df = pd.read_csv(uploaded_file)
+#         df = pd.read_csv(uploaded_file, header=None)
 #     else:
-#         df = pd.read_excel(uploaded_file)
-    
-#     st.success("✅ File uploaded successfully!")
-#     st.write("### Preview of Data:")
-#     st.dataframe(df.head())
+#         df = pd.read_excel(uploaded_file, header=None)
 
-#     # Step 1: Choose the semester column using first-row value as display (sorted)
+#     st.success("✅ File uploaded successfully!")
+#     st.write("### Raw Data Preview")
+#     st.dataframe(df.head(10))
+
+#     # 2) Choose which row contains the column headers (0-based index)
+#     header_row = st.number_input(
+#         "Select the row number (0-10) that contains the column names:",
+#         min_value=0,
+#         max_value=10,
+#         value=0
+#     )# convert to 0-based index
+
+#     # 3) Set the column headers using the selected row and ensure they're strings
+#     try:
+#         df.columns = df.iloc[header_row].astype(str)
+#         df = df[header_row + 1:].reset_index(drop=True)
+#         st.write("### Data Preview after setting headers")
+#         st.dataframe(df.head(10))
+#     except Exception as e:
+#         st.write("Please choose valid row number which contains column names")
+#         st.stop()
+
+#     # -------------------------
+#     # Selections for filtering
+#     # -------------------------
+
+#     # Step 1: Semester column selection
 #     semester_option = st.selectbox(
 #         "1. View the 'Preview of Data' & select the column name, that you think contain 'Semester Number'", 
-#         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
+#         options=sort_options(list(df.columns))
 #     )
-#     # Map the selected display value back to the actual column
-#     semester_col = next((col for col in df.columns if str(df.iloc[0][col]) == semester_option), None)
 
-#     # Step 2: Select a semester value from the chosen column (display only the value, sorted)
-#     if semester_col:
+#     # Step 2: Select a semester value from the chosen column
+#     if semester_option:
 #         semester_value = st.selectbox(
-#             "Select your Semester:", 
-#             options=sort_options([str(val) for val in df[semester_col].unique()])
+#             "Select your Semester:",
+#             options=sort_options([str(val) for val in df[semester_option].unique()])
 #         )
 
-#     # Step 3: Choose the core section column (display only first-row value, sorted)
+#     # Step 3: Section column selection
 #     section_option = st.selectbox(
-#         "2. View the 'Preview of Data' & select the column name, that you think contain Your 'Section Number' [Core/Elective]", 
-#         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
+#         "2. View the 'Preview of Data' & select the column name, that you think contain Your 'Section Number' [Core/Elective]",
+#         options=sort_options(list(df.columns))
 #     )
-#     section_col = next((col for col in df.columns if str(df.iloc[0][col]) == section_option), None)
 
-#     # Step 4: Select the core section value (display only the value, sorted)
-#     if section_col:
+#     # Step 4: Select a section value (filtering on the chosen semester)
+#     if section_option:
+#         subset_df = df[df[semester_option] == semester_value]
 #         section_value = st.selectbox(
-#             "Select your required [Core/Elective] Section", 
-#             options=sort_options([str(val) for val in df[df[semester_col] == semester_value][section_col].unique()])
+#             "Select your required [Core/Elective] Section:",
+#             options=sort_options([str(val) for val in subset_df[section_option].unique()])
 #         )
 
-#     # Step 5: Choose the school name column (display only the first-row value, sorted)
+#     # Step 5: School column selection
 #     school_option = st.selectbox(
 #         "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
-#         options=sort_options([str(df.iloc[0][col]) for col in df.columns])
+#         options=sort_options(list(df.columns))
 #     )
-#     school_col = next((col for col in df.columns if str(df.iloc[0][col]) == school_option), None)
 
-#     # Step 6: Select the school value (display only the value, sorted)
-#     if school_col:
+#     # Step 6: Select a school value (filtering on the chosen semester & section)
+#     if school_option:
+#         subset_df = df[
+#             (df[semester_option] == semester_value) &
+#             (df[section_option] == section_value)
+#         ]
 #         school_value = st.selectbox(
-#             "Select your School:", 
-#             options=sort_options([
-#                 str(val) for val in df[
-#                     (df[semester_col] == semester_value) & 
-#                     (df[section_col] == section_value)
-#                 ][school_col].unique()
-#             ])
+#             "Select your School:",
+#             options=sort_options([str(val) for val in subset_df[school_option].unique()])
 #         )
 
-#     # ✅ Final filtered DataFrame output — shows all rows that match the selections
+#     # Final filtered DataFrame output
 #     if school_value:
 #         st.write("### 🎯 Schedules as per you Requirement is Filtered")
 #         final_df = df[
-#             (df[semester_col] == semester_value) & 
-#             (df[section_col] == section_value) & 
-#             (df[school_col] == school_value)
+#             (df[semester_option] == semester_value) &
+#             (df[section_option] == section_value) &
+#             (df[school_option] == school_value)
 #         ]
-        
+
 #         st.dataframe(final_df)
 #         st.write(f"✅ Total rows matching your criteria: **{len(final_df)}**")
 
-#         # Create a mapping: column name -> its first row value (as string)
-#         col_mapping = {col: str(df.iloc[0][col]) for col in final_df.columns}
-
-#         # Here, we do NOT sort the final columns multiselect.
-#         # They appear in the same order as they exist in final_df.
-#         selected_display = st.multiselect(
-#             "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise", 
-#             options=list(col_mapping.values()),       # Not sorted
-#             default=list(col_mapping.values())        # Not sorted
+#         # Let user select columns for the final CSV export
+#         selected_columns = st.multiselect(
+#             "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise [Optional]", 
+#             options=list(final_df.columns),
+#             default=list(final_df.columns)
 #         )
-#         # Map the selected display values back to the original column names
-#         selected_columns = [col for col, disp in col_mapping.items() if disp in selected_display]
 
-#         # Download button for CSV export (with selected columns)
+#         # Download button for CSV export
 #         if selected_columns:
-#             csv_data = final_df[selected_columns].to_csv(index=False).encode('utf-8')
+#             csv_data = final_df[selected_columns].to_csv(index=False).encode("utf-8")
 #             st.download_button(
 #                 label="📥 Download your schedule as CSV File",
 #                 data=csv_data,
 #                 file_name="filtered_results.csv",
 #                 mime="text/csv"
 #             )
-#             st.write(f"Rows in output may contain another classes as well which might have same Section, but it's easy to read **{len(final_df)} rows** rather than **{len(df)} rows**")
+
+#             st.write(
+#                 f"Rows in output may contain other classes with the same Section, "
+#                 f"but it's easier to read **{len(final_df)} rows** instead of **{len(df)} rows**."
+#             )
 # else:
-#     st.info("📌 Drag & drop or click to upload a file (xls, xlsx, csv)")
+#     st.info("📌 Drag & drop or click to upload a file (xls, xlsx, csv).")
