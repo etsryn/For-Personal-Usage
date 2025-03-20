@@ -114,7 +114,7 @@ if uploaded_file is not None:
 
         # Let user select columns for the final CSV export
         selected_columns = st.multiselect(
-            "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise", 
+            "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise [Optional]", 
             options=list(final_df.columns),
             default=list(final_df.columns)
         )
