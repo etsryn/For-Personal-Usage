@@ -49,7 +49,7 @@ if uploaded_file is not None:
 
     # Semester selection
     semester_option = st.selectbox(
-        "1️⃣ Select the column that contains 'Semester Number':",
+        "1️⃣ View the 'Data Preview - Headers Set' & select the column name, that you think contain 'Semester Number'",
         options=sort_options(list(df.columns))
     )
 
@@ -61,7 +61,7 @@ if uploaded_file is not None:
 
     # Section selection
     section_option = st.selectbox(
-        "2️⃣ Select the column that contains 'Section Number' [Core/Elective]:",
+        "2️⃣ View the 'Data Preview - Headers Set' & select the column name, that you think contain Your 'Section Number' [Core/Elective]",
         options=sort_options(list(df.columns))
     )
 
@@ -74,7 +74,7 @@ if uploaded_file is not None:
 
     # School selection
     school_option = st.selectbox(
-        "3️⃣ Select the column that contains 'School Name':",
+        "3️⃣ View the 'Data Preview - Headers Set' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
         options=sort_options(list(df.columns))
     )
 
