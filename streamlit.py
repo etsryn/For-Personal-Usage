@@ -34,35 +34,23 @@ if uploaded_file is not None:
     st.write("### Raw Data Preview (first 10 rows):")
     st.dataframe(df.head(10))
 
-    # # 2) Choose which row contains the column headers (1-based index)
-    # header_row = st.number_input(
-    #     "Select the row number (0-10) that contains the column names:",
-    #     min_value=0,
-    #     max_value=10,
-    #     value=0
-    # )# convert to 0-based index
-
-    # # 3) Set the column headers using the selected row and ensure they're strings
-    # try:
-    #     df.columns = df.iloc[header_row].astype(str)
-    #     df = df[header_row + 1:].reset_index(drop=True)
-    #     st.write("### Data Preview after setting headers:")
-    #     st.dataframe(df.head(10))
-    # except Exception as e:
-    #     st.write("Please choose valid column's rows number")
-    #     st.stop()
-        # 2) Choose which row contains the column headers (1-based index)
-    header_row = 0
+    # 2) Choose which row contains the column headers (0-based index)
+    header_row = st.number_input(
+        "Select the row number (0-10) that contains the column names:",
+        min_value=0,
+        max_value=10,
+        value=0
+    )# convert to 0-based index
 
     # 3) Set the column headers using the selected row and ensure they're strings
     try:
         df.columns = df.iloc[header_row].astype(str)
         df = df[header_row + 1:].reset_index(drop=True)
+        st.write("### Data Preview after setting headers:")
+        st.dataframe(df.head(10))
     except Exception as e:
-        try:
-            header_row = 1
-        except Exception as e:
-            header_row = 2
+        st.write("Please choose valid column's rows number")
+        st.stop()
 
     # -------------------------
     # Selections for filtering
