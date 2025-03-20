@@ -36,11 +36,11 @@ if uploaded_file is not None:
 
     # 2) Choose which row contains the column headers (1-based index)
     header_row = st.number_input(
-        "Select the row number (1-10) that contains the column names:",
+        "Select the row number (0-10) that contains the column names:",
         min_value=1,
         max_value=10,
         value=1
-    ) - 1  # convert to 0-based index
+    )# convert to 0-based index
 
     # 3) Set the column headers using the selected row and ensure they're strings
     df.columns = df.iloc[header_row].astype(str)
