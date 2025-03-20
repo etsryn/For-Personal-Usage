@@ -35,7 +35,7 @@ if uploaded_file is not None:
     st.dataframe(df.head(10))
 
     # 2) Choose which row contains the column headers (1-based index)
-    header_row 1 - 1  # convert to 0-based index
+    header_row = 1 - 1  # convert to 0-based index
 
     # 3) Set the column headers using the selected row and ensure they're strings
     df.columns = df.iloc[header_row].astype(str)
