@@ -31,7 +31,7 @@ if uploaded_file is not None:
         df = pd.read_excel(uploaded_file, header=None)
 
     st.success("✅ File uploaded successfully!")
-    st.write("### Raw Data Preview (first 10 rows):")
+    st.write("### Raw Data Preview")
     st.dataframe(df.head(10))
 
     # 2) Choose which row contains the column headers (0-based index)
@@ -46,10 +46,10 @@ if uploaded_file is not None:
     try:
         df.columns = df.iloc[header_row].astype(str)
         df = df[header_row + 1:].reset_index(drop=True)
-        st.write("### Data Preview after setting headers:")
+        st.write("### Data Preview after setting headers")
         st.dataframe(df.head(10))
     except Exception as e:
-        st.write("Please choose valid column's rows number")
+        st.write("Please choose valid row number which contains column names")
         st.stop()
 
     # -------------------------
@@ -58,7 +58,7 @@ if uploaded_file is not None:
 
     # Step 1: Semester column selection
     semester_option = st.selectbox(
-        "1. Select the column name that contains 'Semester Number':",
+        "1. View the 'Preview of Data' & select the column name, that you think contain 'Semester Number'", 
         options=sort_options(list(df.columns))
     )
 
@@ -71,7 +71,7 @@ if uploaded_file is not None:
 
     # Step 3: Section column selection
     section_option = st.selectbox(
-        "2. Select the column name that contains your 'Section Number' [Core/Elective]:",
+        "2. View the 'Preview of Data' & select the column name, that you think contain Your 'Section Number' [Core/Elective]",
         options=sort_options(list(df.columns))
     )
 
@@ -85,7 +85,7 @@ if uploaded_file is not None:
 
     # Step 5: School column selection
     school_option = st.selectbox(
-        "3. Select the column name that contains your School Name (e.g. SCSE, SBAS, etc.):",
+        "3. View the 'Preview of Data' & select the column name, that you think contain your `School Name (eg. SCSE, SBAS, etc)' [Don't get confused by Faculty's School Name as it may lead to false output]", 
         options=sort_options(list(df.columns))
     )
 
@@ -102,7 +102,7 @@ if uploaded_file is not None:
 
     # Final filtered DataFrame output
     if school_value:
-        st.write("### 🎯 Schedules filtered based on your selections:")
+        st.write("### 🎯 Schedules as per you Requirement is Filtered")
         final_df = df[
             (df[semester_option] == semester_value) &
             (df[section_option] == section_value) &
@@ -114,7 +114,7 @@ if uploaded_file is not None:
 
         # Let user select columns for the final CSV export
         selected_columns = st.multiselect(
-            "📌 Select the columns you want in the final CSV:",
+            "📌 Select the columns you want in the final CSV [Cross [x] out irrelevent column which will not help you to find your class, to make result concise", 
             options=list(final_df.columns),
             default=list(final_df.columns)
         )
